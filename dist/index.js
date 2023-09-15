@@ -8006,7 +8006,7 @@ const conventional_commits_parser_1 = __importDefault(__nccwpck_require__(9742))
 const utils_1 = __nccwpck_require__(4990);
 function validateArgs() {
     const args = {
-        repoToken: core.getInput("repo_token", { required: true }),
+        repoToken: process.env.GITHUB_TOKEN,
         title: core.getInput("title", { required: false }),
         preRelease: JSON.parse(core.getInput("prerelease", { required: false })),
         automaticReleaseTag: core.getInput("automatic_release_tag", {
@@ -8019,6 +8019,10 @@ async function main() {
     try {
         const args = validateArgs();
         const context = new context_1.Context();
+        if (!args.repoToken) {
+            core.setFailed("No repo token specified. Please set the GITHUB_TOKEN environment variable.");
+            return;
+        }
         const octokit = new rest_1.Octokit({
             auth: args.repoToken,
         });

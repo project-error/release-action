@@ -1,9 +1,6 @@
 name: "WSS Release"
 description: "Auto release for WSS projects"
 inputs:
-  repo_token:
-    description: "GitHub secret token"
-    required: true
   title:
     description: "The title for the release"
     required: false

@@ -20,7 +20,7 @@ import {
 
 function validateArgs(): ActionArgs {
   const args = {
-    repoToken: core.getInput("repo_token", { required: true }),
+    repoToken: process.env.GITHUB_TOKEN as string,
     title: core.getInput("title", { required: false }),
     preRelease: JSON.parse(core.getInput("prerelease", { required: false })),
     automaticReleaseTag: core.getInput("automatic_release_tag", {
@@ -35,6 +35,13 @@ export async function main() {
   try {
     const args = validateArgs();
     const context = new Context();
+
+    if (!args.repoToken) {
+      core.setFailed(
+        "No repo token specified. Please set the GITHUB_TOKEN environment variable.",
+      );
+      return;
+    }
 
     const octokit = new Octokit({
       auth: args.repoToken,
