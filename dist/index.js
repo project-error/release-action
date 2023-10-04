@@ -10671,7 +10671,7 @@ async function createNewRelease(octokit, params) {
     return resp.data.upload_url;
 }
 const createNewReleaseTag = async (currentTag, commits, environment) => {
-    let increment = (0, utils_1.getNextSemverBump)(commits);
+    let increment = (0, utils_1.getNextSemverBump)(commits, environment);
     core.info(`Next semver bump: ${increment}`);
     if (environment === "test") {
         if (!increment) {
@@ -10958,7 +10958,7 @@ const generateChangelogFromParsedCommits = (parsedCommits) => {
     return changelog;
 };
 exports.generateChangelogFromParsedCommits = generateChangelogFromParsedCommits;
-function getNextSemverBump(commits) {
+function getNextSemverBump(commits, environment) {
     let hasBreakingChange = false;
     let hasNewFeature = false;
     let hasNewFix = false;
@@ -10984,6 +10984,9 @@ function getNextSemverBump(commits) {
         return "minor";
     }
     else if (hasNewFix) {
+        return "patch";
+    }
+    else if (environment === "prod") {
         return "patch";
     }
     else {

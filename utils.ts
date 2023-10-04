@@ -67,7 +67,10 @@ export const generateChangelogFromParsedCommits = (
   return changelog;
 };
 
-export function getNextSemverBump(commits: ParsedCommit[]): string {
+export function getNextSemverBump(
+  commits: ParsedCommit[],
+  environment: string,
+): string {
   let hasBreakingChange = false;
   let hasNewFeature = false;
   let hasNewFix = false;
@@ -96,6 +99,8 @@ export function getNextSemverBump(commits: ParsedCommit[]): string {
   } else if (hasNewFeature) {
     return "minor";
   } else if (hasNewFix) {
+    return "patch";
+  } else if (environment === "prod") {
     return "patch";
   } else {
     return "";

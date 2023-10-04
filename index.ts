@@ -179,7 +179,7 @@ const createNewReleaseTag = async (
   commits: ParsedCommit[],
   environment: "dev" | "test" | "prod",
 ) => {
-  let increment = getNextSemverBump(commits);
+  let increment = getNextSemverBump(commits, environment);
 
   core.info(`Next semver bump: ${increment}`);
 
