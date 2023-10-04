@@ -17,15 +17,24 @@ dependencies:
   '@octokit/rest':
     specifier: ^20.0.1
     version: 20.0.1
+  '@types/conventional-recommended-bump':
+    specifier: ^6.1.1
+    version: 6.1.1
   conventional-changelog-angular:
     specifier: ^7.0.0
     version: 7.0.0
+  conventional-changelog-preset-loader:
+    specifier: ^4.1.0
+    version: 4.1.0
   conventional-commits-parser:
     specifier: ^5.0.0
     version: 5.0.0
   conventional-recommended-bump:
     specifier: ^9.0.0
     version: 9.0.0
+  recommended-bump:
+    specifier: ^1.5.2
+    version: 1.5.2
   semver:
     specifier: ^7.5.4
     version: 7.5.4
@@ -34,12 +43,12 @@ devDependencies:
   '@octokit/types':
     specifier: ^11.1.0
     version: 11.1.0
+  '@types/conventional-changelog-preset-loader':
+    specifier: ^2.3.3
+    version: 2.3.3
   '@types/conventional-commits-parser':
     specifier: ^3.0.4
     version: 3.0.4
-  '@types/conventional-recommended-bump':
-    specifier: ^6.1.1
-    version: 6.1.1
   '@types/semver':
     specifier: ^7.5.2
     version: 7.5.2
@@ -283,6 +292,13 @@ packages:
       '@types/git-raw-commits': 2.0.1
       '@types/node': 20.6.1
       '@types/normalize-package-data': 2.4.1
+
+  /@types/conventional-changelog-preset-loader@2.3.3:
+    resolution: {integrity: sha512-x+RULOu4j0xZi4J2oS4fWJ+2nK9NfZ6SxEZ7xW7PX7DRFyOxy1DQEwxo4Vwh5cqS/Dz6RNQWSPg7eshvIJu51w==}
+    dependencies:
+      '@types/conventional-changelog-core': 4.2.4
+      '@types/conventional-changelog-writer': 4.0.6
+      '@types/conventional-commits-parser': 3.0.4
     dev: true
 
   /@types/conventional-changelog-writer@4.0.6:
@@ -290,13 +306,11 @@ packages:
     dependencies:
       '@types/conventional-commits-parser': 3.0.4
       '@types/node': 20.6.1
-    dev: true
 
   /@types/conventional-commits-parser@3.0.4:
     resolution: {integrity: sha512-nO3LTqFyExqXWAAfcsGh63gPLmYZSAqlLZfhqJ57qkgtyd0BA8S8M/mqtWCD/PvegjuaGk1z4UG5Hy7bZq79zA==}
     dependencies:
       '@types/node': 20.6.1
-    dev: true
 
   /@types/conventional-recommended-bump@6.1.1:
     resolution: {integrity: sha512-wxKDmz1U21EgTB5tP19RJ8vl9SME1k3dHVQ9MAeoghZpd141VhQBTOiWCQP2ifl2tT6XByME06UaN8wAQAft0Q==}
@@ -304,21 +318,17 @@ packages:
       '@types/conventional-changelog-core': 4.2.4
       '@types/conventional-changelog-writer': 4.0.6
       '@types/conventional-commits-parser': 3.0.4
-    dev: true
 
   /@types/git-raw-commits@2.0.1:
     resolution: {integrity: sha512-vE2lbXxqJ0AqMDoP4N6d+WVfbcBla9+z8IL6e+37JNQIwYZCYY0z3J7hdpY8D/VGwFZ0yIYQLcqk8eCnfXsaEg==}
     dependencies:
       '@types/node': 20.6.1
-    dev: true
 
   /@types/node@20.6.1:
     resolution: {integrity: sha512-4LcJvuXQlv4lTHnxwyHQZ3uR9Zw2j7m1C9DfuwoTFQQP4Pmu04O6IfLYgMmHoOCt0nosItLLZAH+sOrRE0Bo8g==}
-    dev: true
 
   /@types/normalize-package-data@2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
-    dev: true
 
   /@types/semver@7.5.2:
     resolution: {integrity: sha512-7aqorHYgdNO4DM36stTiGO3DvKoex9TQRwsJU6vMaFGyqpBA1MNZkz+PG3gaNUPpTAOYhT1WR7M1JyA3fbS9Cw==}
@@ -413,6 +423,11 @@ packages:
       is-obj: 2.0.0
     dev: false
 
+  /esm@3.2.25:
+    resolution: {integrity: sha512-U1suiZ2oDVWv4zPO56S0NcR5QriEahGtdN2OR6FiOG4WJvcjBVFB0qI4+eKoWFH483PKGuLuu6V8Z4T5g63UVA==}
+    engines: {node: '>=6'}
+    dev: false
+
   /git-raw-commits@4.0.0:
     resolution: {integrity: sha512-ICsMM1Wk8xSGMowkOmPrzo2Fgmfo4bMHLNX6ytHjajRJUqvHOw/TFapQ+QG75c3X/tTDDhOSRPGC52dDbNM8FQ==}
     engines: {node: '>=16'}
@@ -482,6 +497,19 @@ packages:
     resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
     dependencies:
       wrappy: 1.0.2
+    dev: false
+
+  /parse-commit-message@4.0.0-canary.20:
+    resolution: {integrity: sha512-y34PoGKtFs8wlggvsJ2JOeX3BmFebmGl1yO2MY6QiKYV3l0bDlL27CzSsVFMnb1n8MjeaUW7kL71hX/G+NsKQA==}
+    engines: {node: ^8.10.0 || >=10.13.0}
+    dev: false
+
+  /recommended-bump@1.5.2:
+    resolution: {integrity: sha512-P7zb9BB4kd/sprfv5+VYBoA42vWcPccGNHaKuBFx5a/yd+c28sF9CRE6pP+rb086Uz1P1BVR5z7e0kRUEZacig==}
+    engines: {node: ^8.10.0 || >=10.13.0}
+    dependencies:
+      esm: 3.2.25
+      parse-commit-message: 4.0.0-canary.20
     dev: false
 
   /semver@7.5.4:

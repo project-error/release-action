@@ -10,6 +10,9 @@ inputs:
   automatic_release_tag:
     description: "Automatic release tag. Will delete the old."
     required: false
+  environment:
+    description: "The environment for the release"
+    required: false
 runs:
   using: "node20"
   main: "dist/index.js"

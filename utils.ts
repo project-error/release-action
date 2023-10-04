@@ -5,7 +5,7 @@ export const getShortSHA = (sha: string): string => {
   return sha.substring(0, coreAbbrev);
 };
 
-enum ConventionalCommitTypes {
+export enum ConventionalCommitTypes {
   feat = "Features",
   fix = "Bug Fixes",
   docs = "Documentation",
@@ -17,6 +17,7 @@ enum ConventionalCommitTypes {
   ci = "Continuous Integration",
   chore = "Chores",
   revert = "Reverts",
+  breaking = "Breaking Changes",
 }
 
 const getFormattedChangelogEntry = (parsedCommit: ParsedCommit): string => {
@@ -65,3 +66,38 @@ export const generateChangelogFromParsedCommits = (
 
   return changelog;
 };
+
+export function getNextSemverBump(commits: ParsedCommit[]): string {
+  let hasBreakingChange = false;
+  let hasNewFeature = false;
+  let hasNewFix = false;
+
+  for (const commit of commits) {
+    const commitType = commit.commitMsg.type;
+
+    if (commitType === "fix") {
+      hasNewFix = true;
+    }
+
+    // Check for breaking changes
+    if (commitType === "breaking") {
+      hasBreakingChange = true;
+    }
+
+    // Check for new features
+    if (commitType === "feat") {
+      hasNewFeature = true;
+    }
+  }
+
+  // Determine semver bump based on commit types
+  if (hasBreakingChange) {
+    return "major";
+  } else if (hasNewFeature) {
+    return "minor";
+  } else if (hasNewFix) {
+    return "patch";
+  } else {
+    return "";
+  }
+}

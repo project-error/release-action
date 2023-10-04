@@ -7,6 +7,7 @@ export type ActionArgs = {
   title: string;
   preRelease: boolean;
   automaticReleaseTag: string;
+  environment: "dev" | "test" | "prod";
 };
 
 export type CreateReleaseParams =
