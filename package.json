@@ -1,7 +1,7 @@
 {
   "name": "release-action",
   "version": "1.0.0",
-  "description": "Release action for WSS projects",
+  "description": "Release action for Project Error projects",
   "main": "index.js",
   "scripts": {
     "build": "ncc build index.ts --license licenses.txt"

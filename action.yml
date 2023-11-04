@@ -1,5 +1,5 @@
-name: "WSS Release"
-description: "Auto release for WSS projects"
+name: "Project Error Release"
+description: "Auto release for Project Error projects"
 inputs:
   title:
     description: "The title for the release"
