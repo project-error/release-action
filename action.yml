@@ -16,6 +16,9 @@ inputs:
   files:
     description: "Files to upload"
     required: false
+outputs:
+  release_id:
+    description: "ID of the new release"
 runs:
   using: "node20"
   main: "dist/index.js"

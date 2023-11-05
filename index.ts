@@ -110,7 +110,7 @@ export async function main() {
       name: args.title ?? args.automaticReleaseTag,
     });
 
-    await uploadReleaseArtifacts(octokit, context, release, args.files);
+    core.setOutput("release_id", release.data.id);
   } catch (err) {
     if (err instanceof Error) {
       core.setFailed(err?.message);

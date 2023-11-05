@@ -1,6 +1,5 @@
 import * as core from "@actions/core";
 import { globby } from "globby";
-import { lstatSync } from "fs";
 import path from "path";
 import md5File from "md5-file";
 import { CreateReleaseResponse, OctokitClient } from "./typings";
