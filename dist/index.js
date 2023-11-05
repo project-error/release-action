@@ -10625,7 +10625,7 @@ async function main() {
             prerelease: args.preRelease,
             name: (_a = args.title) !== null && _a !== void 0 ? _a : args.automaticReleaseTag,
         });
-        core.setOutput("release_id", release.data.id);
+        core.setOutput("release_id", release.data.id.toString());
     }
     catch (err) {
         if (err instanceof Error) {

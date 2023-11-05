@@ -110,7 +110,7 @@ export async function main() {
       name: args.title ?? args.automaticReleaseTag,
     });
 
-    core.setOutput("release_id", release.data.id);
+    core.setOutput("release_id", release.data.id.toString());
   } catch (err) {
     if (err instanceof Error) {
       core.setFailed(err?.message);
