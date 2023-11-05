@@ -14,6 +14,9 @@ export type ActionArgs = {
 export type CreateReleaseParams =
   Endpoints["POST /repos/{owner}/{repo}/releases"]["parameters"];
 
+export type CreateReleaseResponse =
+  RestEndpointMethodTypes["repos"]["createRelease"]["response"];
+
 export type GitGetRefParams =
   Endpoints["GET /repos/{owner}/{repo}/git/ref/{ref}"]["parameters"];
 

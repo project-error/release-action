@@ -3,13 +3,13 @@ import { globby } from "globby";
 import { lstatSync } from "fs";
 import path from "path";
 import md5File from "md5-file";
-import { OctokitClient } from "./typings";
+import { CreateReleaseResponse, OctokitClient } from "./typings";
 import { Context } from "@actions/github/lib/context";
 
 export const uploadReleaseArtifacts = async (
   client: OctokitClient,
   context: Context,
-  uploadUrl: string,
+  release: CreateReleaseResponse,
   files: string[],
 ): Promise<void> => {
   core.startGroup("Uploading release artifacts");
@@ -30,10 +30,10 @@ export const uploadReleaseArtifacts = async (
             "content-length": lstatSync(filePath).size,
             "content-type": "application/octet-stream",
           },
-          baseUrl: uploadUrl,
+          baseUrl: release.data.upload_url,
+          release_id: release.data.id,
           name: nameWithExt,
           repo: context.repo.repo,
-          release_id: context.payload.release?.id,
           data: `@${filePath}`,
         });
       } catch (err: any) {
@@ -50,10 +50,10 @@ export const uploadReleaseArtifacts = async (
             "content-length": lstatSync(filePath).size,
             "content-type": "application/octet-stream",
           },
-          baseUrl: uploadUrl,
+          baseUrl: release.data.upload_url,
           name: newName,
           repo: context.repo.repo,
-          release_id: context.payload.release?.id,
+          release_id: release.data.id,
           data: `@${filePath}`,
         });
       }

@@ -8,6 +8,7 @@ import {
   BaseheadCommits,
   CreateRefParams,
   CreateReleaseParams,
+  CreateReleaseResponse,
   GitGetRefParams,
   OctokitClient,
   ParsedCommit,
@@ -100,7 +101,7 @@ export async function main() {
       sha: context.sha,
     });
 
-    const newReleaseUrl = await createNewRelease(octokit, {
+    const release = await createNewRelease(octokit, {
       owner: context.repo.owner,
       repo: context.repo.repo,
       tag_name: args.automaticReleaseTag,
@@ -109,7 +110,7 @@ export async function main() {
       name: args.title ?? args.automaticReleaseTag,
     });
 
-    await uploadReleaseArtifacts(octokit, context, newReleaseUrl, args.files);
+    await uploadReleaseArtifacts(octokit, context, release, args.files);
   } catch (err) {
     if (err instanceof Error) {
       core.setFailed(err?.message);
@@ -124,7 +125,7 @@ export async function main() {
 async function createNewRelease(
   octokit: OctokitClient,
   params: CreateReleaseParams,
-): Promise<string> {
+): Promise<CreateReleaseResponse> {
   core.startGroup(`Generating new release for the ${params.tag_name} tag`);
 
   core.info("Creating new release");
@@ -132,7 +133,7 @@ async function createNewRelease(
 
   core.endGroup();
 
-  return resp.data.upload_url;
+  return resp;
 }
 
 async function searchForPreviousReleaseTag(

@@ -18606,7 +18606,7 @@ async function main() {
             ref: `refs/tags/${args.automaticReleaseTag}`,
             sha: context.sha,
         });
-        const newReleaseUrl = await createNewRelease(octokit, {
+        const release = await createNewRelease(octokit, {
             owner: context.repo.owner,
             repo: context.repo.repo,
             tag_name: args.automaticReleaseTag,
@@ -18614,7 +18614,7 @@ async function main() {
             prerelease: args.preRelease,
             name: (_a = args.title) !== null && _a !== void 0 ? _a : args.automaticReleaseTag,
         });
-        await (0, upload_1.uploadReleaseArtifacts)(octokit, context, newReleaseUrl, args.files);
+        await (0, upload_1.uploadReleaseArtifacts)(octokit, context, release, args.files);
     }
     catch (err) {
         if (err instanceof Error) {
@@ -18631,7 +18631,7 @@ async function createNewRelease(octokit, params) {
     core.info("Creating new release");
     const resp = await octokit.repos.createRelease(params);
     core.endGroup();
-    return resp.data.upload_url;
+    return resp;
 }
 async function searchForPreviousReleaseTag(octokit, tagInfo) {
     const listTagsOptions = octokit.repos.listTags.endpoint.merge(tagInfo);
@@ -18829,8 +18829,7 @@ const globby_1 = __nccwpck_require__(9474);
 const fs_1 = __nccwpck_require__(7147);
 const path_1 = __importDefault(__nccwpck_require__(1017));
 const md5_file_1 = __importDefault(__nccwpck_require__(1169));
-const uploadReleaseArtifacts = async (client, context, uploadUrl, files) => {
-    var _a, _b;
+const uploadReleaseArtifacts = async (client, context, release, files) => {
     core.startGroup("Uploading release artifacts");
     for (const fileGlob of files) {
         const paths = await (0, globby_1.globby)(fileGlob);
@@ -18847,10 +18846,10 @@ const uploadReleaseArtifacts = async (client, context, uploadUrl, files) => {
                         "content-length": (0, fs_1.lstatSync)(filePath).size,
                         "content-type": "application/octet-stream",
                     },
-                    baseUrl: uploadUrl,
+                    baseUrl: release.data.upload_url,
+                    release_id: release.data.id,
                     name: nameWithExt,
                     repo: context.repo.repo,
-                    release_id: (_a = context.payload.release) === null || _a === void 0 ? void 0 : _a.id,
                     data: `@${filePath}`,
                 });
             }
@@ -18866,10 +18865,10 @@ const uploadReleaseArtifacts = async (client, context, uploadUrl, files) => {
                         "content-length": (0, fs_1.lstatSync)(filePath).size,
                         "content-type": "application/octet-stream",
                     },
-                    baseUrl: uploadUrl,
+                    baseUrl: release.data.upload_url,
                     name: newName,
                     repo: context.repo.repo,
-                    release_id: (_b = context.payload.release) === null || _b === void 0 ? void 0 : _b.id,
+                    release_id: release.data.id,
                     data: `@${filePath}`,
                 });
             }
