@@ -28,6 +28,7 @@ export const uploadReleaseArtifacts = async (
           owner: context.repo.owner,
           headers: {
             "X-GitHub-Api-Version": "2022-11-28",
+            "Content-Type": "application/zip",
           },
           baseUrl: release.data.upload_url,
           release_id: release.data.id,
@@ -47,6 +48,7 @@ export const uploadReleaseArtifacts = async (
           owner: context.repo.owner,
           headers: {
             "X-GitHub-Api-Version": "2022-11-28",
+            "Content-Type": "application/zip",
           },
           baseUrl: release.data.upload_url,
           name: newName,
