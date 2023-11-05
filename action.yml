@@ -13,6 +13,9 @@ inputs:
   environment:
     description: "The environment for the release"
     required: false
+  files:
+    description: "Files to upload"
+    required: false
 runs:
   using: "node20"
   main: "dist/index.js"
