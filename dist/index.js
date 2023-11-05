@@ -18843,7 +18843,7 @@ const uploadReleaseArtifacts = async (client, context, release, files) => {
                     owner: context.repo.owner,
                     headers: {
                         "X-GitHub-Api-Version": "2022-11-28",
-                        "Content-Type": "application/zip",
+                        "Content-Type": "multipart/form-data",
                     },
                     baseUrl: release.data.upload_url,
                     release_id: release.data.id,
@@ -18862,7 +18862,7 @@ const uploadReleaseArtifacts = async (client, context, release, files) => {
                     owner: context.repo.owner,
                     headers: {
                         "X-GitHub-Api-Version": "2022-11-28",
-                        "Content-Type": "application/zip",
+                        "Content-Type": "multipart/form-data",
                     },
                     baseUrl: release.data.upload_url,
                     name: newName,
