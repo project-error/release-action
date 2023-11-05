@@ -8,6 +8,7 @@ export type ActionArgs = {
   preRelease: boolean;
   automaticReleaseTag: string;
   environment: "dev" | "prod";
+  files: string[];
 };
 
 export type CreateReleaseParams =

@@ -16,6 +16,7 @@ import {
 import { prerelease } from "semver";
 import conventionalCommitsParser from "conventional-commits-parser";
 import { generateChangelogFromParsedCommits } from "./utils";
+import { uploadReleaseArtifacts } from "./upload";
 
 function validateArgs(): ActionArgs {
   const args = {
@@ -28,7 +29,13 @@ function validateArgs(): ActionArgs {
     environment: core.getInput("environment", { required: false }) as
       | "dev"
       | "prod",
+    files: [] as string[],
   };
+
+  const inputFilesStr = core.getInput("files", { required: false });
+  if (inputFilesStr) {
+    args.files = inputFilesStr.split(/\r?\n/);
+  }
 
   return args;
 }
@@ -93,7 +100,7 @@ export async function main() {
       sha: context.sha,
     });
 
-    await createNewRelease(octokit, {
+    const newReleaseUrl = await createNewRelease(octokit, {
       owner: context.repo.owner,
       repo: context.repo.repo,
       tag_name: args.automaticReleaseTag,
@@ -101,6 +108,8 @@ export async function main() {
       prerelease: args.preRelease,
       name: args.title ?? args.automaticReleaseTag,
     });
+
+    await uploadReleaseArtifacts(octokit, context, newReleaseUrl, args.files);
   } catch (err) {
     if (err instanceof Error) {
       core.setFailed(err?.message);
