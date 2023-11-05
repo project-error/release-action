@@ -3,21 +3,19 @@ import * as core from "@actions/core";
 import { Context } from "@actions/github/lib/context";
 import semverValid from "semver/functions/valid";
 import semverRcompare from "semver/functions/rcompare";
-import semverInc from "semver/functions/inc";
 import {
   ActionArgs,
   BaseheadCommits,
   CreateRefParams,
   CreateReleaseParams,
-  GetReleaseByTagParams,
   GitGetRefParams,
   OctokitClient,
   ParsedCommit,
   ReposListTagsParams,
 } from "./typings";
-import { prerelease, ReleaseType } from "semver";
+import { prerelease } from "semver";
 import conventionalCommitsParser from "conventional-commits-parser";
-import { generateChangelogFromParsedCommits, getNextSemverBump } from "./utils";
+import { generateChangelogFromParsedCommits } from "./utils";
 
 function validateArgs(): ActionArgs {
   const args = {
@@ -29,7 +27,6 @@ function validateArgs(): ActionArgs {
     }),
     environment: core.getInput("environment", { required: false }) as
       | "dev"
-      | "test"
       | "prod",
   };
 
@@ -58,16 +55,14 @@ export async function main() {
     core.endGroup();
 
     core.startGroup("Getting release tags");
-    const previousReleaseTag = args.automaticReleaseTag
-      ? args.automaticReleaseTag
-      : await searchForPreviousEnvironmentReleaseTag(
-          octokit,
-          {
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-          },
-          args.environment,
-        );
+    const previousReleaseTag = await searchForPreviousEnvironmentReleaseTag(
+      octokit,
+      {
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+      },
+      args.environment,
+    );
 
     core.info(`Previous release tag: ${previousReleaseTag}`);
     core.endGroup();
@@ -82,13 +77,6 @@ export async function main() {
       context.sha,
     );
 
-    const parsedCommits = await parseCommits(
-      octokit,
-      context.repo.owner,
-      context.repo.repo,
-      commitsSinceRelease,
-    );
-
     core.info(`Found ${commitsSinceRelease.length} commits since last release`);
 
     const changelog = await getChangelog(
@@ -98,57 +86,21 @@ export async function main() {
       commitsSinceRelease,
     );
 
-    if (args.automaticReleaseTag) {
-      await createGithubTag(octokit, {
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        ref: `refs/tags/${args.automaticReleaseTag}`,
-        sha: context.sha,
-      });
+    await createGithubTag(octokit, {
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      ref: `refs/tags/${args.automaticReleaseTag}`,
+      sha: context.sha,
+    });
 
-      await deletePreviousGithubRelease(octokit, {
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        tag: args.automaticReleaseTag,
-      });
-
-      await createNewRelease(octokit, {
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        tag_name: args.automaticReleaseTag,
-        body: changelog,
-        prerelease: args.preRelease,
-        name: args.title ? args.title : args.automaticReleaseTag,
-      });
-    } else {
-      const latestReleaseTag = await searchForPreviousReleaseTag(octokit, {
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-      });
-
-      const newReleaseTag = await createNewReleaseTag(
-        latestReleaseTag,
-        parsedCommits,
-        args.environment,
-      );
-      core.info(`New release tag: ${newReleaseTag}`);
-
-      await createGithubTag(octokit, {
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        ref: `refs/tags/${newReleaseTag}`,
-        sha: context.sha,
-      });
-
-      await createNewRelease(octokit, {
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        tag_name: newReleaseTag,
-        body: changelog,
-        prerelease: args.preRelease,
-        name: args.title ? `${args.title} - ${newReleaseTag}` : newReleaseTag,
-      });
-    }
+    await createNewRelease(octokit, {
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      tag_name: args.automaticReleaseTag,
+      body: changelog,
+      prerelease: args.preRelease,
+      name: args.title ?? args.automaticReleaseTag,
+    });
   } catch (err) {
     if (err instanceof Error) {
       core.setFailed(err?.message);
@@ -173,32 +125,6 @@ async function createNewRelease(
 
   return resp.data.upload_url;
 }
-
-const createNewReleaseTag = async (
-  currentTag: string,
-  commits: ParsedCommit[],
-  environment: "dev" | "test" | "prod",
-) => {
-  let increment = getNextSemverBump(commits, environment);
-
-  core.info(`Next semver bump: ${increment}`);
-
-  if (environment === "test") {
-    if (!increment) {
-      core.info("New prerelease bump");
-      return semverInc(currentTag, "prerelease", "pre");
-    }
-
-    const preinc = ("pre" + increment) as ReleaseType;
-    const preTag = semverInc(currentTag, preinc, "pre");
-
-    core.info(`New pre-release tag: ${preTag}`);
-    return preTag;
-  }
-
-  // @ts-ignore
-  return semverInc(currentTag, increment);
-};
 
 async function searchForPreviousReleaseTag(
   octokit: OctokitClient,
@@ -225,7 +151,7 @@ async function searchForPreviousReleaseTag(
 async function searchForPreviousEnvironmentReleaseTag(
   octokit: OctokitClient,
   tagInfo: ReposListTagsParams,
-  environment: "dev" | "test" | "prod",
+  environment: "dev" | "prod",
 ) {
   const listTagsOptions = octokit.repos.listTags.endpoint.merge(tagInfo);
   const tl = await octokit.paginate(listTagsOptions);
@@ -235,10 +161,10 @@ async function searchForPreviousEnvironmentReleaseTag(
   const tagList = tl
     .map((tag: any) => {
       core.info(`Found tag ${tag.name}`);
-      if (environment === "test") {
+      if (environment === "dev") {
         core.info(`Environment is test, checking for prerelease tag`);
         const preArr = prerelease(tag.name);
-        if (preArr?.length > 0 && preArr?.includes("pre")) {
+        if (preArr?.length > 0 && preArr?.includes("beta")) {
           const t = semverValid(tag.name);
           core.info(`Prerelease tag: ${t}`);
           return {
@@ -256,7 +182,7 @@ async function searchForPreviousEnvironmentReleaseTag(
         const t = semverValid(tag.name);
         core.info(`Semver tag: ${t}`);
         const preArr = prerelease(tag.name);
-        if (preArr?.length > 0 && preArr?.includes("pre")) {
+        if (preArr?.length > 0 && preArr?.includes("beta")) {
           return {
             ...tag,
             semverTag: null,
@@ -335,58 +261,6 @@ const parseGitTag = (inputRef: string): string => {
   return resMatch[2];
 };
 
-async function parseCommits(
-  octokit: OctokitClient,
-  owner: string,
-  repo: string,
-  commits: BaseheadCommits["data"]["commits"],
-) {
-  const parsedCommits: ParsedCommit[] = [];
-
-  for (const commit of commits) {
-    core.info(`Processing commit ${commit.sha}`);
-
-    const pulls = await octokit.repos.listPullRequestsAssociatedWithCommit({
-      owner,
-      repo,
-      commit_sha: commit.sha,
-    });
-
-    if (pulls.data.length) {
-      core.info(
-        `Found ${pulls.data.length} pull request(s) associated with commit ${commit.sha}`,
-      );
-    }
-
-    const changelogCommit = conventionalCommitsParser.sync(
-      commit.commit.message,
-      {
-        mergePattern: /^Merge pull request #(\d+) from (.*)$/,
-        revertPattern: /^Revert \"([\s\S]*)\"$/,
-      },
-    );
-
-    if (changelogCommit.merge) {
-      core.debug(`Ignoring merge commit: ${changelogCommit.merge}`);
-      continue;
-    }
-
-    if (changelogCommit.revert) {
-      core.debug(`Ignoring revert commit: ${changelogCommit.revert}`);
-      continue;
-    }
-
-    const parsedCommit: ParsedCommit = {
-      commitMsg: changelogCommit,
-      commit,
-    };
-
-    parsedCommits.push(parsedCommit);
-  }
-
-  return parsedCommits;
-}
-
 async function createGithubTag(
   octokit: OctokitClient,
   refInfo: CreateRefParams,
@@ -463,28 +337,6 @@ async function getChangelog(
   const changelog = generateChangelogFromParsedCommits(parsedCommits);
 
   return changelog;
-}
-
-async function deletePreviousGithubRelease(
-  octokit: OctokitClient,
-  releaseInfo: GetReleaseByTagParams,
-) {
-  core.startGroup(`Deleting previous release with tag ${releaseInfo.tag}`);
-
-  try {
-    const resp = await octokit.repos.getReleaseByTag(releaseInfo);
-
-    core.info(`Found release ${resp.data.id}, deleting`);
-    await octokit.repos.deleteRelease({
-      owner: releaseInfo.owner,
-      repo: releaseInfo.repo,
-      release_id: resp.data.id,
-    });
-  } catch (err) {
-    core.info(`Could not find release with tag ${releaseInfo.tag}`);
-  }
-
-  core.endGroup();
 }
 
 main();
