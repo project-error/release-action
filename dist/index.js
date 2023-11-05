@@ -18826,7 +18826,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.uploadReleaseArtifacts = void 0;
 const core = __importStar(__nccwpck_require__(8434));
 const globby_1 = __nccwpck_require__(9474);
-const fs_1 = __nccwpck_require__(7147);
 const path_1 = __importDefault(__nccwpck_require__(1017));
 const md5_file_1 = __importDefault(__nccwpck_require__(1169));
 const uploadReleaseArtifacts = async (client, context, release, files) => {
@@ -18843,8 +18842,7 @@ const uploadReleaseArtifacts = async (client, context, release, files) => {
                 await client.repos.uploadReleaseAsset({
                     owner: context.repo.owner,
                     headers: {
-                        "content-length": (0, fs_1.lstatSync)(filePath).size,
-                        "content-type": "application/octet-stream",
+                        "X-GitHub-Api-Version": "2022-11-28",
                     },
                     baseUrl: release.data.upload_url,
                     release_id: release.data.id,
@@ -18862,8 +18860,7 @@ const uploadReleaseArtifacts = async (client, context, release, files) => {
                 await client.repos.uploadReleaseAsset({
                     owner: context.repo.owner,
                     headers: {
-                        "content-length": (0, fs_1.lstatSync)(filePath).size,
-                        "content-type": "application/octet-stream",
+                        "X-GitHub-Api-Version": "2022-11-28",
                     },
                     baseUrl: release.data.upload_url,
                     name: newName,

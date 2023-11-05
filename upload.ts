@@ -27,8 +27,7 @@ export const uploadReleaseArtifacts = async (
         await client.repos.uploadReleaseAsset({
           owner: context.repo.owner,
           headers: {
-            "content-length": lstatSync(filePath).size,
-            "content-type": "application/octet-stream",
+            "X-GitHub-Api-Version": "2022-11-28",
           },
           baseUrl: release.data.upload_url,
           release_id: release.data.id,
@@ -47,8 +46,7 @@ export const uploadReleaseArtifacts = async (
         await client.repos.uploadReleaseAsset({
           owner: context.repo.owner,
           headers: {
-            "content-length": lstatSync(filePath).size,
-            "content-type": "application/octet-stream",
+            "X-GitHub-Api-Version": "2022-11-28",
           },
           baseUrl: release.data.upload_url,
           name: newName,
