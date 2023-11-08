@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 dependencies:
   '@actions/core':
     specifier: ^1.10.1
@@ -49,8 +53,8 @@ devDependencies:
     specifier: ^2.3.3
     version: 2.3.3
   '@types/conventional-commits-parser':
-    specifier: ^3.0.4
-    version: 3.0.4
+    specifier: ^3.0.6
+    version: 3.0.6
   '@types/semver':
     specifier: ^7.5.2
     version: 7.5.2
@@ -310,7 +314,7 @@ packages:
     resolution: {integrity: sha512-RvEggG8QFC/RN4W1wzQPWG/b36FGkSGilIN4fiE4tUCRxZDudKyDYBwhBMhBa405DnhAyceV/8sMNpkrfUA07A==}
     dependencies:
       '@types/conventional-changelog-writer': 4.0.6
-      '@types/conventional-commits-parser': 3.0.4
+      '@types/conventional-commits-parser': 3.0.6
       '@types/conventional-recommended-bump': 6.1.1
       '@types/git-raw-commits': 2.0.1
       '@types/node': 20.6.1
@@ -321,17 +325,17 @@ packages:
     dependencies:
       '@types/conventional-changelog-core': 4.2.4
       '@types/conventional-changelog-writer': 4.0.6
-      '@types/conventional-commits-parser': 3.0.4
+      '@types/conventional-commits-parser': 3.0.6
     dev: true
 
   /@types/conventional-changelog-writer@4.0.6:
     resolution: {integrity: sha512-OYdHr9V/R1RxUMibC5OVx6v0u9g+ILCmLLMBCKThuANjci8G4dR8HNDPWAgcSdv2sq+sQ+eGL3ULPorGXXMboA==}
     dependencies:
-      '@types/conventional-commits-parser': 3.0.4
+      '@types/conventional-commits-parser': 3.0.6
       '@types/node': 20.6.1
 
-  /@types/conventional-commits-parser@3.0.4:
-    resolution: {integrity: sha512-nO3LTqFyExqXWAAfcsGh63gPLmYZSAqlLZfhqJ57qkgtyd0BA8S8M/mqtWCD/PvegjuaGk1z4UG5Hy7bZq79zA==}
+  /@types/conventional-commits-parser@3.0.6:
+    resolution: {integrity: sha512-z4crlplLzL9uA5kbE4ZghAf5RbrEr1UL/uNGGgxYbJjI0jRBjuYKuasbo13ANZsSapLTM2DLZk6LDcjemow4qQ==}
     dependencies:
       '@types/node': 20.6.1
 
@@ -340,7 +344,7 @@ packages:
     dependencies:
       '@types/conventional-changelog-core': 4.2.4
       '@types/conventional-changelog-writer': 4.0.6
-      '@types/conventional-commits-parser': 3.0.4
+      '@types/conventional-commits-parser': 3.0.6
 
   /@types/git-raw-commits@2.0.1:
     resolution: {integrity: sha512-vE2lbXxqJ0AqMDoP4N6d+WVfbcBla9+z8IL6e+37JNQIwYZCYY0z3J7hdpY8D/VGwFZ0yIYQLcqk8eCnfXsaEg==}
@@ -752,7 +756,3 @@ packages:
   /yallist@4.0.0:
     resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==}
     dev: false
-
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
